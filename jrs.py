@@ -35,6 +35,8 @@ freq_diagram = pygal.Bar()
 freq_diagram._title = "抽取池的频数分布直方图"
 freq_diagram._x_title = "抽取池元素"
 freq_diagram._y_title = "元素剩余（或已抽取）频数"
+global former_item
+former_item = ""
 
 
 # button functions
@@ -63,7 +65,7 @@ def Reread_Button_Onclick():
     global frequency
     global freq_diagram
     fin = open(os.path.join(".", "datas", "choices.txt"), mode="r+")
-    select_pool = fin.readlines()
+    select_pool = copy.deepcopy(fin.readlines())
     fin.close()
     for alternative in select_pool:
         alternative = alternative.strip()
@@ -75,6 +77,7 @@ def Reread_Button_Onclick():
     for alternative in set(select_pool):
         frequency[alternative] = select_pool.count(alternative)
     freq_diagram.x_labels = list(set(select_pool))
+    Refresh_Button_Onclick()
 
 
 def Save_Button_Onclick():
@@ -85,7 +88,7 @@ def Save_Button_Onclick():
     fout.close()
 
 
-def Rend_freq_to_file():
+def Rend_freq_to_browser():
     global freq_diagram
     freq_list = list([])
     for selection, count in frequency.items():
@@ -105,6 +108,28 @@ def Rend_freq_to_file():
     freq_diagram._title = "抽取池的频数分布直方图"
     freq_diagram._x_title = "抽取池元素"
     freq_diagram._y_title = "元素剩余（或已抽取）频数"
+    freq_diagram.x_labels = list(set(select_pool))
+
+
+def Select_Button_Onclick():
+    global selecting_frequency
+    global selecting_pool
+    global selecting_count
+    global former_content
+    if len(selecting_pool) is 0:
+        former_content.config(text="这一轮没啦！刷新下一轮٩(๑>◡<๑)۶")
+    else:
+        selected_item = selecting_pool.pop(0)
+        selecting_frequency[selected_item] -= 1
+        selecting_count += 1
+        global former_item
+        if former_item is "":
+            former_content.config(text="\\")
+        else:
+            former_content.config(text=former_item)
+        former_item = copy.deepcopy(selected_item)
+        del selected_item
+
 
 
 # buttons
@@ -161,6 +186,41 @@ reread_button.place(
     y=210,
     anchor="nw"
 )
+# data visible button/xyx
+data_rend_button = tk.Button(
+    window,
+    text="浏览统计信息",
+    bg="lightblue",
+    fg="black",
+    font=("微软雅黑", 14),
+    width=15,
+    height=1,
+    relief="flat",
+    command=Rend_freq_to_browser
+)
+data_rend_button.place(
+    x=50,
+    y=270,
+    anchor="nw"
+)
+# aoligei button
+select_button = tk.Button(
+    window,
+    text="奥利给干了兄弟们！\n抽一发！",
+    bg="lightblue",
+    font=("微软雅黑", 17),
+    width=15,
+    height=4,
+    relief="flat",
+    command=Select_Button_Onclick,
+    anchor="center"
+)
+select_button.place(
+    x=50,
+    y=350,
+    anchor="nw"
+)
+
 
 # Labels
 # Main title
@@ -236,6 +296,12 @@ file_menu.add_command(
 file_menu.add_command(
     label="从配置中读取抽取池",
     command=Reread_Button_Onclick
+)
+data_menu = tk.Menu(menu_bar, tearoff=0)
+menu_bar.add_cascade(label="数据", menu=data_menu)
+data_menu.add_command(
+    label="浏览数据信息",
+    command=Rend_freq_to_browser
 )
 
 
