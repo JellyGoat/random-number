@@ -65,13 +65,20 @@ def Reread_Button_Onclick():
     global frequency
     global freq_diagram
     fin = open(os.path.join(".", "datas", "choices.txt"), mode="r+")
-    select_pool = copy.deepcopy(fin.readlines())
+    read_pool = copy.deepcopy(fin.readlines())
     fin.close()
-    for alternative in select_pool:
-        alternative = alternative.strip()
-        if alternative is "":
-            while alternative in select_pool:
-                select_pool.remove(alternative)
+    select_pool.clear()
+    while '\n' in read_pool:
+        read_pool.remove('\n')
+    for choices in read_pool:
+        choices = choices.strip()
+        if choices is "":
+            continue
+        if choices[-1] is "\n":
+            choices = choices[:-2]
+            select_pool.append(choices)
+        else:
+            select_pool.append(choices)
     select_pool.sort()
     frequency.clear()
     for alternative in set(select_pool):
@@ -117,7 +124,7 @@ def Select_Button_Onclick():
     global selecting_count
     global former_content
     if len(selecting_pool) is 0:
-        former_content.config(text="这一轮没啦！刷新下一轮٩(๑>◡<๑)۶")
+        selected_content.config(text="这一轮没啦！刷新下一轮٩(๑>◡<๑)۶")
     else:
         selected_item = selecting_pool.pop(0)
         selecting_frequency[selected_item] -= 1
@@ -128,6 +135,7 @@ def Select_Button_Onclick():
         else:
             former_content.config(text=former_item)
         former_item = copy.deepcopy(selected_item)
+        selected_content.config(text=former_item)
         del selected_item
 
 
@@ -209,15 +217,15 @@ select_button = tk.Button(
     text="奥利给干了兄弟们！\n抽一发！",
     bg="lightblue",
     font=("微软雅黑", 17),
-    width=15,
+    width=14,
     height=4,
     relief="flat",
     command=Select_Button_Onclick,
     anchor="center"
 )
 select_button.place(
-    x=50,
-    y=350,
+    x=46,
+    y=335,
     anchor="nw"
 )
 
@@ -255,7 +263,7 @@ subtitle.place(
 # former selection
 former_side_lable = tk.Label(
     window,
-    text="上一次选择",
+    text="上一次结果",
     font=("微软雅黑", 14),
     width=13,
     height=2,
@@ -280,6 +288,36 @@ former_content = tk.Label(
 former_content.place(
     x=620,
     y=150,
+    anchor="n"
+)
+# selected content this time
+selected_content = tk.Label(
+    window,
+    text="这里还什么都没有选٩(๑>◡<๑)۶",
+    width=23,
+    height=4,
+    font=("微软雅黑", 14),
+    bg="cornsilk",
+    anchor="center"
+)
+selected_content.place(
+    x=620,
+    y=230,
+    anchor="n"
+)
+# selected selection
+selected_side_lable = tk.Label(
+    window,
+    text="这一次结果",
+    font=("微软雅黑", 14),
+    width=13,
+    height=4,
+    bg="pink",
+    anchor="center"
+)
+selected_side_lable.place(
+    x=380,
+    y=230,
     anchor="n"
 )
 
