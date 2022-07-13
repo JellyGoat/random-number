@@ -19,13 +19,13 @@ window.iconphoto(False, tk.PhotoImage(
 
 # Global varies
 global select_pool
-select_pool = list([])
+select_pool = [str]
 global selecting_pool
-selecting_pool = list([])
+selecting_pool = [str]
 global frequency
-frequency = dict({})
+frequency = {str: int}
 global selecting_frequency
-selecting_frequency = dict({})
+selecting_frequency = {str: int}
 global total_count
 total_count = 0
 global selecting_count
@@ -72,9 +72,9 @@ def Reread_Button_Onclick():
         read_pool.remove('\n')
     for choices in read_pool:
         choices = choices.strip()
-        if choices is "":
+        if choices == "":
             continue
-        if choices[-1] is "\n":
+        if choices[-1] == "\n":
             choices = choices[:-2]
             select_pool.append(choices)
         else:
@@ -123,21 +123,20 @@ def Select_Button_Onclick():
     global selecting_pool
     global selecting_count
     global former_content
-    if len(selecting_pool) is 0:
+    if len(selecting_pool) == 0:
         selected_content.config(text="这一轮没啦！刷新下一轮٩(๑>◡<๑)۶")
     else:
         selected_item = selecting_pool.pop(0)
         selecting_frequency[selected_item] -= 1
         selecting_count += 1
         global former_item
-        if former_item is "":
+        if former_item == "":
             former_content.config(text="\\")
         else:
             former_content.config(text=former_item)
         former_item = copy.deepcopy(selected_item)
         selected_content.config(text=former_item)
         del selected_item
-
 
 
 # buttons
